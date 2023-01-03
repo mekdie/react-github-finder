@@ -10,24 +10,49 @@ export const GithubProvider = ({ children }) => {
     // const [loading, setLoading] = useState(true);
     const initialState = {
         users: [],
-        loading: true,
+        loading: false,
     };
 
     const [state, dispatch] = useReducer(githubReducer, initialState);
 
+    //get initial users and testing purposes
     const fetchUsers = async () => {
+        setLoading();
         const response = await fetch(`${GITHUB_URL}/users`);
         const data = await response.json();
 
         // setUsers(data);
         // setLoading(false);
+
         //dispatch an action with the reducer
         dispatch({ type: "GET_USERS", payload: data });
     };
+    const searchUsers = async (text) => {
+        setLoading();
+        // const params = new URLSearchParams({ q: text });
+        // or
+        const params = new URLSearchParams(`q=${text}`);
+        // console.log(params.getAll("q"));
+        const response = await fetch(`${GITHUB_URL}/search/users?${params}`);
+        // console.log(response);
+        const { items } = await response.json(); // or data.items
+
+        dispatch({ type: "GET_USERS", payload: items });
+    };
+
+    const clearResults = () => {
+        dispatch({ type: "CLEAR_RESULTS" });
+    };
+    const setLoading = () => dispatch({ type: "SET_LOADING" });
 
     return (
         <GithubContext.Provider
-            value={{ users: state.users, loading: state.loading, fetchUsers }}
+            value={{
+                users: state.users,
+                loading: state.loading,
+                searchUsers,
+                clearResults,
+            }}
         >
             {children}
         </GithubContext.Provider>
