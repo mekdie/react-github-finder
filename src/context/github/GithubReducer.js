@@ -29,6 +29,16 @@ const githubReducer = (state, action) => {
                 ...state,
                 users: [],
             };
+        case "GET_USER_AND_REPOS":
+            console.log("reducer return to state");
+            return {
+                //get the previous state then update the user, repos, and loading  value with object spread operator
+                // https://stackoverflow.com/questions/49491393/using-spread-operator-to-update-an-object-value
+                ...state,
+                user: action.payload.user,
+                repos: action.payload.repos,
+                loading: false,
+            };
         default:
             return state;
     }
